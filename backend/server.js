@@ -1,18 +1,17 @@
-import 'dotenv/config';
-import mongoose from 'mongoose';
-import app from './src/app.js';
-import { scrapeStories } from './src/services/scraper.service.js';
+import "dotenv/config";
+import mongoose from "mongoose";
+import app from "./src/app.js";
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 mongoose
   .connect(process.env.MONGO_URI)
   .then(async () => {
-    console.log('MongoDB connected');
-    await scrapeStories();
+    console.log("MongoDB connected");
+
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
   .catch((err) => {
-    console.error('MongoDB connection error:', err);
+    console.error("MongoDB connection error:", err);
     process.exit(1);
   });
