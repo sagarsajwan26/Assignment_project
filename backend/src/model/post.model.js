@@ -1,12 +1,14 @@
 import mongoose from 'mongoose';
 
-const postSchema = new mongoose.Schema(
+const storySchema = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true },
-    content: { type: String, required: true },
-    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    url: { type: String, default: '' },
+    points: { type: Number, default: 0 },
+    author: { type: String, default: '' },
+    postedAt: { type: String, default: '' },
   },
   { timestamps: true }
 );
 
-export default mongoose.model('Post', postSchema);
+export default mongoose.model('Story', storySchema);

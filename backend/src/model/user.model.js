@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true },
     refreshToken: { type: String },
+    bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Story' }],
   },
   { timestamps: true }
 );

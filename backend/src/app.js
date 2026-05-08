@@ -3,7 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { signup, login, logout } from './controllers/auth.controller.js';
 import postRoutes from './routes/post.routes.js';
-import ApiError from './utils/ApiError.js';
+import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
 
@@ -17,12 +17,6 @@ app.post('/api/auth/login', login);
 app.post('/api/auth/logout', logout);
 app.use('/api/posts', postRoutes);
 
-// Global error handler
-app.use((err, _req, res, _next) => {
-  if (err instanceof ApiError) {
-    return res.status(err.statusCode).json({ success: false, message: err.message });
-  }
-  res.status(500).json({ success: false, message: 'Internal server error' });
-});
+app.use(errorHandler);
 
 export default app;
