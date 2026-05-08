@@ -13,18 +13,49 @@ export default function Home() {
     dispatch(fetchStories({ page, limit: 10 }));
   }, [dispatch, page]);
 
-  if (loading) return <div className="center-msg">Loading stories...</div>;
-  if (error) return <div className="center-msg error">{error}</div>;
-
   return (
-    <div className="container">
-      <h1 className="page-title">Top Stories</h1>
-      <div className="stories-list">
-        {items.map((story) => (
-          <StoryCard key={story._id} story={story} />
-        ))}
+    <div className="max-w-4xl mx-auto">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Trending News</h1>
+          <p className="text-slate-500 mt-1">Discover the latest stories from around the world.</p>
+        </div>
       </div>
-      <Pagination pagination={pagination} onPageChange={setPage} />
+
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-20 space-y-4">
+          <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+          <p className="text-slate-500 font-medium">Fetching the latest stories...</p>
+        </div>
+      ) : error ? (
+        <div className="bg-red-50 border border-red-100 p-6 rounded-2xl text-center">
+          <p className="text-red-600 font-medium">{error}</p>
+          <button 
+            onClick={() => dispatch(fetchStories({ page, limit: 10 }))}
+            className="mt-4 text-sm font-semibold text-red-700 hover:underline"
+          >
+            Try again
+          </button>
+        </div>
+      ) : (
+        <>
+          <div className="grid gap-6">
+            {items.length > 0 ? (
+              items.map((story) => (
+                <StoryCard key={story._id} story={story} />
+              ))
+            ) : (
+              <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-200">
+                <p className="text-slate-400">No stories found. Be the first to post!</p>
+              </div>
+            )}
+          </div>
+          
+          <div className="mt-12 flex justify-center">
+            <Pagination pagination={pagination} onPageChange={setPage} />
+          </div>
+        </>
+      )}
     </div>
   );
 }
