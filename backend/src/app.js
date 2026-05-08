@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { signup, login, logout } from './controllers/auth.controller.js';
+import postRoutes from './routes/post.routes.js';
 import ApiError from './utils/ApiError.js';
 
 const app = express();
@@ -14,6 +15,7 @@ app.use(cookieParser());
 app.post('/api/auth/register', signup);
 app.post('/api/auth/login', login);
 app.post('/api/auth/logout', logout);
+app.use('/api/posts', postRoutes);
 
 // Global error handler
 app.use((err, _req, res, _next) => {
