@@ -1,11 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { signup, login, logout } from './controllers/auth.controller.js';
+import { globalLimiter } from './middleware/rateLimiter.js';
+import authRoutes from './routes/auth.routes.js';
 import storyRoutes from './routes/story.routes.js';
+import scraperRoutes from './routes/scraper.routes.js';
 import errorHandler from './middleware/errorHandler.js';
-import { scrapeTopStories } from './services/scraper.service.js';
-import protect from './middleware/auth.middleware.js';
 
 const app = express();
 
@@ -13,21 +13,11 @@ app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173', creden
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(globalLimiter);
 
-app.post('/api/auth/register', signup);
-app.post('/api/auth/login', login);
-app.post('/api/auth/logout', protect, logout);
-
+app.use('/api/auth', authRoutes);
 app.use('/api/stories', storyRoutes);
-
-app.post('/api/scrape', async (_req, res, next) => {
-  try {
-    const stories = await scrapeTopStories();
-    res.json({ success: true, count: stories.length, message: 'Scrape completed' });
-  } catch (err) {
-    next(err);
-  }
-});
+app.use('/api/scrape', scraperRoutes);
 
 app.use(errorHandler);
 
