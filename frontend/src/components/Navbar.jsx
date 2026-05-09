@@ -22,18 +22,19 @@ export default function Navbar() {
         <div className="flex items-center gap-6">
           {user ? (
             <>
-              <Link to="/manage" className="text-slate-600 hover:text-indigo-600 font-medium transition-colors">
-                + Create
+              <Link to="/bookmarks" className="text-slate-600 hover:text-indigo-600 font-medium transition-colors">
+                Bookmarks
               </Link>
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-slate-500 hidden sm:inline">Hi, {user.username}</span>
-                <button
-                  onClick={handleLogout}
-                  className="px-4 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-all text-sm font-medium"
-                >
-                  Logout
-                </button>
-              </div>
+              <Link to="/manage-post" className="btn-primary !px-4 !py-1.5 text-sm">
+                + Post
+              </Link>
+              <span className="text-sm text-slate-500 hidden sm:inline">Hi, {user.username}</span>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-all text-sm font-medium"
+              >
+                Logout
+              </button>
             </>
           ) : (
             <div className="flex gap-4">
