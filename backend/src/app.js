@@ -2,9 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { signup, login, logout } from './controllers/auth.controller.js';
-import postRoutes from './routes/post.routes.js';
 import storyRoutes from './routes/story.routes.js';
 import errorHandler from './middleware/errorHandler.js';
+import { scrapeTopStories } from './services/scraper.service.js';
+import protect from './middleware/auth.middleware.js';
 
 const app = express();
 
@@ -15,9 +16,18 @@ app.use(cookieParser());
 
 app.post('/api/auth/register', signup);
 app.post('/api/auth/login', login);
-app.post('/api/auth/logout', logout);
-app.use('/api/posts', postRoutes);
+app.post('/api/auth/logout', protect, logout);
+
 app.use('/api/stories', storyRoutes);
+
+app.post('/api/scrape', async (_req, res, next) => {
+  try {
+    const stories = await scrapeTopStories();
+    res.json({ success: true, count: stories.length, message: 'Scrape completed' });
+  } catch (err) {
+    next(err);
+  }
+});
 
 app.use(errorHandler);
 
