@@ -11,7 +11,8 @@ const app = express();
 
 const allowedOrigins = [
   'http://localhost:5173',
-  ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL.replace(/\/$/, '')] : []),
+  'http://localhost:4173',
+  ...(process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',').map((u) => u.trim().replace(/\/$/, '')) : []),
 ];
 
 const corsOptions = {
