@@ -73,8 +73,8 @@ const storiesSlice = createSlice({
       .addCase(fetchStories.pending, (state) => { state.loading = true; state.error = null; })
       .addCase(fetchStories.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload.stories;
-        state.pagination = action.payload.pagination;
+        state.items = action.payload?.stories ?? [];
+        state.pagination = action.payload?.pagination ?? state.pagination;
       })
       .addCase(fetchStories.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
       .addCase(fetchBookmarks.fulfilled, (state, action) => { state.bookmarks = action.payload; })
