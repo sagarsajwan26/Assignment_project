@@ -14,18 +14,40 @@ export const getStories = asyncHandler(async (req, res) => {
     Story.countDocuments(),
   ]);
 
-  res.json(
-    new ApiResponse(200, {
-      stories,
-      pagination: { total, page, limit, totalPages: Math.ceil(total / limit) },
-    }, 'Stories fetched successfully')
-  );
+  res.json(new ApiResponse(200, {
+    stories,
+    pagination: { total, page, limit, totalPages: Math.ceil(total / limit) },
+  }, 'Stories fetched successfully'));
 });
 
 export const getStory = asyncHandler(async (req, res) => {
   const story = await Story.findById(req.params.id).lean();
   if (!story) throw new ApiError(404, 'Story not found');
   res.json(new ApiResponse(200, story, 'Story fetched'));
+});
+
+export const createStory = asyncHandler(async (req, res) => {
+  const { title, content, url } = req.body;
+  if (!title || !content) throw new ApiError(400, 'Title and content are required');
+  const story = await Story.create({ title, content, url, author: req.user.id });
+  res.status(201).json(new ApiResponse(201, story, 'Story created successfully'));
+});
+
+export const updateStory = asyncHandler(async (req, res) => {
+  const { title, content, url } = req.body;
+  const story = await Story.findByIdAndUpdate(
+    req.params.id,
+    { title, content, url },
+    { new: true, runValidators: true }
+  );
+  if (!story) throw new ApiError(404, 'Story not found');
+  res.json(new ApiResponse(200, story, 'Story updated successfully'));
+});
+
+export const deleteStory = asyncHandler(async (req, res) => {
+  const story = await Story.findByIdAndDelete(req.params.id);
+  if (!story) throw new ApiError(404, 'Story not found');
+  res.json(new ApiResponse(200, null, 'Story deleted successfully'));
 });
 
 export const toggleBookmark = asyncHandler(async (req, res) => {
@@ -35,11 +57,8 @@ export const toggleBookmark = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user.id);
   const idx = user.bookmarks.findIndex((b) => b.toString() === story._id.toString());
 
-  if (idx === -1) {
-    user.bookmarks.push(story._id);
-  } else {
-    user.bookmarks.splice(idx, 1);
-  }
+  if (idx === -1) user.bookmarks.push(story._id);
+  else user.bookmarks.splice(idx, 1);
 
   await user.save({ validateBeforeSave: false });
   const bookmarked = idx === -1;
