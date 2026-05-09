@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getStoriesApi, createPostApi, updatePostApi, deletePostApi } from '../../apiRoutes/post.api';
+import { getStoriesApi, toggleBookmarkApi, getBookmarksApi, createPostApi, updatePostApi, deletePostApi } from '../../apiRoutes/post.api';
 
 export const fetchStories = createAsyncThunk(
   'stories/fetch',
@@ -13,7 +13,25 @@ export const fetchStories = createAsyncThunk(
   }
 );
 
-export const createPost = createAsyncThunk('posts/create', async (data, { rejectWithValue }) => {
+export const fetchBookmarks = createAsyncThunk('stories/fetchBookmarks', async (_, { rejectWithValue }) => {
+  try {
+    const res = await getBookmarksApi();
+    return res.data.data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || 'Failed to fetch bookmarks');
+  }
+});
+
+export const toggleBookmark = createAsyncThunk('stories/toggleBookmark', async (id, { rejectWithValue }) => {
+  try {
+    const res = await toggleBookmarkApi(id);
+    return { id, bookmarked: res.data.data.bookmarked };
+  } catch (err) {
+    return rejectWithValue(err.response?.data?.message || 'Failed to toggle bookmark');
+  }
+});
+
+export const createPost = createAsyncThunk('stories/createPost', async (data, { rejectWithValue }) => {
   try {
     const res = await createPostApi(data);
     return res.data.data;
@@ -22,7 +40,7 @@ export const createPost = createAsyncThunk('posts/create', async (data, { reject
   }
 });
 
-export const updatePost = createAsyncThunk('posts/update', async ({ id, data }, { rejectWithValue }) => {
+export const updatePost = createAsyncThunk('stories/updatePost', async ({ id, data }, { rejectWithValue }) => {
   try {
     const res = await updatePostApi(id, data);
     return res.data.data;
@@ -31,7 +49,7 @@ export const updatePost = createAsyncThunk('posts/update', async ({ id, data }, 
   }
 });
 
-export const deletePost = createAsyncThunk('posts/delete', async (id, { rejectWithValue }) => {
+export const deletePost = createAsyncThunk('stories/deletePost', async (id, { rejectWithValue }) => {
   try {
     await deletePostApi(id);
     return id;
@@ -44,6 +62,7 @@ const storiesSlice = createSlice({
   name: 'stories',
   initialState: {
     items: [],
+    bookmarks: [],
     pagination: { total: 0, page: 1, limit: 10, totalPages: 1 },
     loading: false,
     error: null,
@@ -58,13 +77,25 @@ const storiesSlice = createSlice({
         state.pagination = action.payload.pagination;
       })
       .addCase(fetchStories.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
-      .addCase(createPost.fulfilled, (state, action) => { state.items.unshift(action.payload); })
+      .addCase(fetchBookmarks.fulfilled, (state, action) => { state.bookmarks = action.payload; })
+      .addCase(toggleBookmark.fulfilled, (state, action) => {
+        const { id, bookmarked } = action.payload;
+        if (bookmarked) {
+          const story = state.items.find((s) => s._id === id);
+          if (story && !state.bookmarks.find((b) => b._id === id)) state.bookmarks.push(story);
+        } else {
+          state.bookmarks = state.bookmarks.filter((b) => b._id !== id);
+        }
+      })
+      .addCase(createPost.fulfilled, (state, action) => {
+        state.items.unshift(action.payload);
+      })
       .addCase(updatePost.fulfilled, (state, action) => {
-        const index = state.items.findIndex(item => item._id === action.payload._id);
-        if (index !== -1) state.items[index] = action.payload;
+        const idx = state.items.findIndex((s) => s._id === action.payload._id);
+        if (idx !== -1) state.items[idx] = action.payload;
       })
       .addCase(deletePost.fulfilled, (state, action) => {
-        state.items = state.items.filter(item => item._id !== action.payload);
+        state.items = state.items.filter((s) => s._id !== action.payload);
       });
   },
 });
