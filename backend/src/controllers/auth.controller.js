@@ -7,8 +7,8 @@ const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
 
 const cookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict',
+  secure: true,
+  sameSite: 'none',
 };
 
 const generateTokens = async (user) => {
@@ -62,7 +62,7 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
   await User.findByIdAndUpdate(req.user.id, { $unset: { refreshToken: 1 } });
   res
-    .clearCookie('accessToken')
-    .clearCookie('refreshToken')
+    .clearCookie('accessToken', cookieOptions)
+    .clearCookie('refreshToken', cookieOptions)
     .json(new ApiResponse(200, {}, 'Logged out successfully'));
 };

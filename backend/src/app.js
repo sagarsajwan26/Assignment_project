@@ -9,7 +9,17 @@ import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
 
-app.use(cors({ origin: process.env.CLIENT_URL?.replace(/\/$/, ''), credentials: true }));
+const allowedOrigins = process.env.CLIENT_URL
+  ? [process.env.CLIENT_URL.replace(/\/$/, '')]
+  : ['http://localhost:5173'];
+
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    cb(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
