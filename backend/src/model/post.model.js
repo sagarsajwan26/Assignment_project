@@ -7,6 +7,7 @@ const storySchema = new mongoose.Schema(
     points: { type: Number, default: 0 },
     content: { type: String, default: '' },
     author: { type: mongoose.Schema.Types.Mixed, default: '' },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
     postedAt: { type: String, default: '' },
   },
   { timestamps: true }

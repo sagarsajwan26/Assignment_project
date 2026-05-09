@@ -36,9 +36,8 @@ const authSlice = createSlice({
     error: null,
   },
   reducers: {
-    clearError: (state) => {
-      state.error = null;
-    },
+    clearError: (state) => { state.error = null; },
+    clearUser: (state) => { state.user = null; localStorage.removeItem('user'); },
   },
   extraReducers: (builder) => {
     builder
@@ -57,6 +56,10 @@ const authSlice = createSlice({
       })
       .addCase(signupUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
       .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        localStorage.removeItem('user');
+      })
+      .addCase(logoutUser.rejected, (state) => {
         state.user = null;
         localStorage.removeItem('user');
       });

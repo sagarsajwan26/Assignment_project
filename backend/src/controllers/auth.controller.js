@@ -1,7 +1,6 @@
 import User from '../model/user.model.js';
 import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
-import asyncHandler from '../utils/asyncHandler.js';
 
 const ACCESS_TOKEN_MAX_AGE = 15 * 60 * 1000;
 const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
@@ -20,7 +19,7 @@ const generateTokens = async (user) => {
   return { accessToken, refreshToken };
 };
 
-export const signup = asyncHandler(async (req, res) => {
+export const signup = async (req, res) => {
   const { username, email, password } = req.body;
   if (!username || !email || !password) throw new ApiError(400, 'All fields are required');
 
@@ -39,9 +38,9 @@ export const signup = asyncHandler(async (req, res) => {
       accessToken,
       refreshToken,
     }, 'User registered successfully'));
-});
+};
 
-export const login = asyncHandler(async (req, res) => {
+export const login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) throw new ApiError(400, 'All fields are required');
 
@@ -58,12 +57,12 @@ export const login = asyncHandler(async (req, res) => {
       accessToken,
       refreshToken,
     }, 'Login successful'));
-});
+};
 
-export const logout = asyncHandler(async (req, res) => {
+export const logout = async (req, res) => {
   await User.findByIdAndUpdate(req.user.id, { $unset: { refreshToken: 1 } });
   res
     .clearCookie('accessToken')
     .clearCookie('refreshToken')
     .json(new ApiResponse(200, {}, 'Logged out successfully'));
-});
+};

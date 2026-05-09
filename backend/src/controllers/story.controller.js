@@ -28,24 +28,30 @@ export const getStory = async (req, res) => {
 export const createStory = async (req, res) => {
   const { title, url, points, author, postedAt } = req.body;
   if (!title) throw new ApiError(400, 'Title is required');
-  const story = await Story.create({ title, url, points: points || 0, author: author || '', postedAt: postedAt || '' });
+  const story = await Story.create({
+    title, url, points: points || 0, author: author || '',
+    postedAt: postedAt || '', createdBy: req.user.id,
+  });
   res.status(201).json(new ApiResponse(201, story, 'Story created successfully'));
 };
 
 export const updateStory = async (req, res) => {
   const { title, url, points, author, postedAt } = req.body;
-  const story = await Story.findByIdAndUpdate(
-    req.params.id,
-    { title, url, points, author, postedAt },
-    { new: true, runValidators: true }
-  );
+  const story = await Story.findById(req.params.id);
   if (!story) throw new ApiError(404, 'Story not found');
+  if (story.createdBy && story.createdBy.toString() !== req.user.id)
+    throw new ApiError(403, 'Not authorized to update this story');
+  Object.assign(story, { title, url, points, author, postedAt });
+  await story.save();
   res.json(new ApiResponse(200, story, 'Story updated successfully'));
 };
 
 export const deleteStory = async (req, res) => {
-  const story = await Story.findByIdAndDelete(req.params.id);
+  const story = await Story.findById(req.params.id);
   if (!story) throw new ApiError(404, 'Story not found');
+  if (story.createdBy && story.createdBy.toString() !== req.user.id)
+    throw new ApiError(403, 'Not authorized to delete this story');
+  await story.deleteOne();
   res.json(new ApiResponse(200, null, 'Story deleted successfully'));
 };
 

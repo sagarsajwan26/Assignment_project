@@ -11,6 +11,9 @@ export default function ManageStories() {
   const { items, pagination, loading, scraping } = useSelector((s) => s.stories);
   const { user } = useSelector((s) => s.auth);
 
+  // only stories this user created
+  const myStories = items.filter((s) => s.createdBy === user?.id || s.createdBy?._id === user?.id);
+
   const [form, setForm] = useState(empty);
   const [editId, setEditId] = useState(null);
   const [showForm, setShowForm] = useState(false);
@@ -153,14 +156,14 @@ export default function ManageStories() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {items.length === 0 ? (
+              {myStories.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="text-center py-12 text-slate-400">
-                    No stories yet. Scrape HN or add one manually.
+                    You haven't created any stories yet. Add one manually above.
                   </td>
                 </tr>
               ) : (
-                items.map((story) => (
+                myStories.map((story) => (
                   <tr key={story._id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-4 py-3">
                       <a href={story.url} target="_blank" rel="noreferrer" className="font-medium text-slate-800 hover:text-indigo-600 line-clamp-1">
@@ -194,7 +197,7 @@ export default function ManageStories() {
           {/* Pagination */}
           {pagination.totalPages > 1 && (
             <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100">
-              <span className="text-xs text-slate-400">{pagination.total} total stories</span>
+              <span className="text-xs text-slate-400">{myStories.length} of your stories</span>
               <div className="flex gap-2">
                 <button
                   disabled={page === 1}
