@@ -1,14 +1,15 @@
 import User from '../model/user.model.js';
 import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
+import jwt from 'jsonwebtoken';
 
 const ACCESS_TOKEN_MAX_AGE = 15 * 60 * 1000;
 const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
 
 const cookieOptions = {
   httpOnly: true,
-  secure: true,
-  sameSite: 'none',
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
 };
 
 const generateTokens = async (user) => {
@@ -60,7 +61,18 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-  await User.findByIdAndUpdate(req.user.id, { $unset: { refreshToken: 1 } });
+  try {
+    const token = req.cookies?.accessToken || req.headers.authorization?.split(' ')[1];
+    if (token) {
+      const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      if (decoded?.id) {
+        await User.findByIdAndUpdate(decoded.id, { $unset: { refreshToken: 1 } });
+      }
+    }
+  } catch (error) {
+    // Ignore verification errors during logout as we're clearing everything anyway
+  }
+
   res
     .clearCookie('accessToken', cookieOptions)
     .clearCookie('refreshToken', cookieOptions)
