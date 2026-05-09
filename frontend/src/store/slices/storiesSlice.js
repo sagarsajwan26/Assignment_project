@@ -6,6 +6,7 @@ import {
 
 export const fetchStories = createAsyncThunk('stories/fetch', async ({ page = 1, limit = 10, createdBy = null } = {}, { rejectWithValue }) => {
   try {
+    console.log('Fetching stories with filter:', { page, limit, createdBy });
     const res = await getStoriesApi(page, limit, createdBy);
     return res.data.data;
   } catch (err) {

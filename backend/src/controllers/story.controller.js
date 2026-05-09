@@ -9,7 +9,10 @@ export const getStories = async (req, res) => {
   const skip = (page - 1) * limit;
 
   const query = {};
-  if (req.query.createdBy) query.createdBy = req.query.createdBy;
+  if (req.query.createdBy) {
+    console.log('Filtering by createdBy:', req.query.createdBy);
+    query.createdBy = req.query.createdBy;
+  }
 
   const [stories, total] = await Promise.all([
     Story.find(query).sort({ points: -1, createdAt: -1 }).skip(skip).limit(limit).lean(),
