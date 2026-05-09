@@ -26,6 +26,7 @@ export const getStory = async (req, res) => {
 };
 
 export const createStory = async (req, res) => {
+  console.log('Create story request received:', { body: req.body, user: req.user });
   const { title, url, points, author, postedAt } = req.body;
   if (!title) throw new ApiError(400, 'Title is required');
   const story = await Story.create({
