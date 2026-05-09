@@ -4,7 +4,7 @@ import { loginApi, signupApi, logoutApi } from '../../apiRoutes/auth.api';
 export const loginUser = createAsyncThunk('auth/login', async (data, { rejectWithValue }) => {
   try {
     const res = await loginApi(data);
-    return res.data.data;
+    return res.data.data.user;
   } catch (err) {
     return rejectWithValue(err.response?.data?.message || 'Login failed');
   }
@@ -13,7 +13,7 @@ export const loginUser = createAsyncThunk('auth/login', async (data, { rejectWit
 export const signupUser = createAsyncThunk('auth/signup', async (data, { rejectWithValue }) => {
   try {
     const res = await signupApi(data);
-    return res.data.data;
+    return res.data.data.user;
   } catch (err) {
     return rejectWithValue(err.response?.data?.message || 'Signup failed');
   }
@@ -22,7 +22,6 @@ export const signupUser = createAsyncThunk('auth/signup', async (data, { rejectW
 export const logoutUser = createAsyncThunk('auth/logout', async (_, { rejectWithValue }) => {
   try {
     await logoutApi();
-    return null;
   } catch (err) {
     return rejectWithValue(err.response?.data?.message || 'Logout failed');
   }
@@ -31,13 +30,12 @@ export const logoutUser = createAsyncThunk('auth/logout', async (_, { rejectWith
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    user: JSON.parse(localStorage.getItem('user')) || null,
+    user: JSON.parse(sessionStorage.getItem('user')) || null,
     loading: false,
     error: null,
   },
   reducers: {
     clearError: (state) => { state.error = null; },
-    clearUser: (state) => { state.user = null; localStorage.removeItem('user'); },
   },
   extraReducers: (builder) => {
     builder
@@ -45,23 +43,23 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
-        localStorage.setItem('user', JSON.stringify(action.payload));
+        sessionStorage.setItem('user', JSON.stringify(action.payload));
       })
       .addCase(loginUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
       .addCase(signupUser.pending, (state) => { state.loading = true; state.error = null; })
       .addCase(signupUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
-        localStorage.setItem('user', JSON.stringify(action.payload));
+        sessionStorage.setItem('user', JSON.stringify(action.payload));
       })
       .addCase(signupUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
-        localStorage.removeItem('user');
+        sessionStorage.removeItem('user');
       })
       .addCase(logoutUser.rejected, (state) => {
         state.user = null;
-        localStorage.removeItem('user');
+        sessionStorage.removeItem('user');
       });
   },
 });

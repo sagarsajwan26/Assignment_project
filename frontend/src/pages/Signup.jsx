@@ -39,7 +39,7 @@ export default function Signup() {
             <input
               type="text"
               className="input-field"
-              placeholder="sagar123"
+              placeholder="johndoe"
               required
               value={formData.username}
               onChange={(e) => setFormData({ ...formData, username: e.target.value })}
