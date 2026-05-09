@@ -8,9 +8,12 @@ export const getStories = async (req, res) => {
   const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 10));
   const skip = (page - 1) * limit;
 
+  const query = {};
+  if (req.query.createdBy) query.createdBy = req.query.createdBy;
+
   const [stories, total] = await Promise.all([
-    Story.find().sort({ points: -1 }).skip(skip).limit(limit).lean(),
-    Story.countDocuments(),
+    Story.find(query).sort({ points: -1, createdAt: -1 }).skip(skip).limit(limit).lean(),
+    Story.countDocuments(query),
   ]);
 
   res.json(new ApiResponse(200, {
@@ -26,7 +29,6 @@ export const getStory = async (req, res) => {
 };
 
 export const createStory = async (req, res) => {
-  console.log('Create story request received:', { body: req.body, user: req.user });
   const { title, url, points, author, postedAt } = req.body;
   if (!title) throw new ApiError(400, 'Title is required');
   const story = await Story.create({

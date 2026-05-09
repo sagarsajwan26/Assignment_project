@@ -11,8 +11,7 @@ export default function ManageStories() {
   const { items, pagination, loading, scraping } = useSelector((s) => s.stories);
   const { user } = useSelector((s) => s.auth);
 
-  // only stories this user created
-  const myStories = items.filter((s) => s.createdBy === user?.id || s.createdBy?._id === user?.id);
+  const myStories = items;
 
   const [form, setForm] = useState(empty);
   const [editId, setEditId] = useState(null);
@@ -24,8 +23,8 @@ export default function ManageStories() {
   }, [user, navigate]);
 
   useEffect(() => {
-    dispatch(fetchStories({ page, limit: 10 }));
-  }, [dispatch, page]);
+    if (user) dispatch(fetchStories({ page, limit: 10, createdBy: user.id }));
+  }, [dispatch, page, user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,7 +36,8 @@ export default function ManageStories() {
     setForm(empty);
     setEditId(null);
     setShowForm(false);
-    dispatch(fetchStories({ page, limit: 10 }));
+    dispatch(fetchStories({ page: 1, limit: 10, createdBy: user.id }));
+    setPage(1);
   };
 
   const handleEdit = (story) => {
