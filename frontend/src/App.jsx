@@ -5,7 +5,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Bookmarks from './pages/Bookmarks';
-import ManagePost from './pages/ManagePost';
+import ManageStories from './pages/ManageStories';
 
 export default function App() {
   return (
@@ -16,30 +16,8 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route
-            path="/bookmarks"
-            element={
-              <ProtectedRoute>
-                <Bookmarks />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/manage-post"
-            element={
-              <ProtectedRoute>
-                <ManagePost />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/manage-post/:id"
-            element={
-              <ProtectedRoute>
-                <ManagePost />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/bookmarks" element={<ProtectedRoute><Bookmarks /></ProtectedRoute>} />
+          <Route path="/manage" element={<ProtectedRoute><ManageStories /></ProtectedRoute>} />
         </Routes>
       </main>
     </BrowserRouter>

@@ -22,11 +22,11 @@ export default function Navbar() {
         <div className="flex items-center gap-6">
           {user ? (
             <>
-              <Link to="/bookmarks" className="text-slate-600 hover:text-indigo-600 font-medium transition-colors">
-                Bookmarks
+              <Link to="/manage" className="text-slate-600 hover:text-indigo-600 font-medium transition-colors text-sm">
+                Manage
               </Link>
-              <Link to="/manage-post" className="btn-primary !px-4 !py-1.5 text-sm">
-                + Post
+              <Link to="/bookmarks" className="text-slate-600 hover:text-indigo-600 font-medium transition-colors text-sm">
+                Bookmarks
               </Link>
               <span className="text-sm text-slate-500 hidden sm:inline">Hi, {user.username}</span>
               <button
