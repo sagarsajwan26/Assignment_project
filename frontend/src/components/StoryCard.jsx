@@ -30,7 +30,7 @@ export default function StoryCard({ story }) {
       </div>
       <div className="flex items-center gap-4 text-xs font-medium text-slate-400 mt-3">
         <span>{story.points} pts</span>
-        <span>by {story.author || 'Anonymous'}</span>
+        <span>by {story.createdBy?.username || story.author || 'Anonymous'}</span>
         <span>{story.postedAt || 'Recently'}</span>
       </div>
     </div>

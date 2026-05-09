@@ -10,12 +10,16 @@ export const getStories = async (req, res) => {
 
   const query = {};
   if (req.query.createdBy) {
-    console.log('Filtering by createdBy:', req.query.createdBy);
     query.createdBy = req.query.createdBy;
   }
 
   const [stories, total] = await Promise.all([
-    Story.find(query).sort({ points: -1, createdAt: -1 }).skip(skip).limit(limit).lean(),
+    Story.find(query)
+      .populate('createdBy', 'username email')
+      .sort({ points: -1, createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
     Story.countDocuments(query),
   ]);
 
@@ -26,7 +30,7 @@ export const getStories = async (req, res) => {
 };
 
 export const getStory = async (req, res) => {
-  const story = await Story.findById(req.params.id).lean();
+  const story = await Story.findById(req.params.id).populate('createdBy', 'username email').lean();
   if (!story) throw new ApiError(404, 'Story not found');
   res.json(new ApiResponse(200, story, 'Story fetched'));
 };
@@ -49,8 +53,10 @@ export const updateStory = async (req, res) => {
   const { title, url, points, author, postedAt } = req.body;
   const story = await Story.findById(req.params.id);
   if (!story) throw new ApiError(404, 'Story not found');
-  if (story.createdBy && story.createdBy.toString() !== req.user.id)
+  
+  if (!story.createdBy || story.createdBy.toString() !== req.user.id) {
     throw new ApiError(403, 'Not authorized to update this story');
+  }
 
   story.title = String(title).trim();
   story.url = url ? String(url).trim() : '';
@@ -65,8 +71,10 @@ export const updateStory = async (req, res) => {
 export const deleteStory = async (req, res) => {
   const story = await Story.findById(req.params.id);
   if (!story) throw new ApiError(404, 'Story not found');
-  if (story.createdBy && story.createdBy.toString() !== req.user.id)
+  
+  if (!story.createdBy || story.createdBy.toString() !== req.user.id) {
     throw new ApiError(403, 'Not authorized to delete this story');
+  }
   await story.deleteOne();
   res.json(new ApiResponse(200, null, 'Story deleted successfully'));
 };
