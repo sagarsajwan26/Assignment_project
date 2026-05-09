@@ -27,8 +27,8 @@ const errorHandler = (err, _req, res, _next) => {
     return res.status(401).json({ success: false, message: 'Token expired' });
   }
 
-  console.error('Unhandled error:', err);
-  res.status(500).json({ success: false, message: err.message || 'Internal server error' });
+  if (process.env.NODE_ENV !== 'production') console.error(err);
+  res.status(500).json({ success: false, message: 'Internal server error' });
 };
 
 export default errorHandler;

@@ -29,8 +29,12 @@ export const createStory = async (req, res) => {
   const { title, url, points, author, postedAt } = req.body;
   if (!title) throw new ApiError(400, 'Title is required');
   const story = await Story.create({
-    title, url, points: points || 0, author: author || '',
-    postedAt: postedAt || '', createdBy: req.user.id,
+    title: String(title).trim(),
+    url: url ? String(url).trim() : '',
+    points: parseInt(points) || 0,
+    author: author ? String(author).trim() : '',
+    postedAt: postedAt ? String(postedAt).trim() : '',
+    createdBy: req.user.id,
   });
   res.status(201).json(new ApiResponse(201, story, 'Story created successfully'));
 };
@@ -41,8 +45,14 @@ export const updateStory = async (req, res) => {
   if (!story) throw new ApiError(404, 'Story not found');
   if (story.createdBy && story.createdBy.toString() !== req.user.id)
     throw new ApiError(403, 'Not authorized to update this story');
-  Object.assign(story, { title, url, points, author, postedAt });
+
+  story.title = String(title).trim();
+  story.url = url ? String(url).trim() : '';
+  story.points = parseInt(points) || 0;
+  story.author = author ? String(author).trim() : '';
+  story.postedAt = postedAt ? String(postedAt).trim() : '';
   await story.save();
+
   res.json(new ApiResponse(200, story, 'Story updated successfully'));
 };
 
