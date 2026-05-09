@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { createPost, updatePost } from '../store/slices/storiesSlice';
+import { createPost, updatePost, fetchStories } from '../store/slices/storiesSlice';
 
 export default function ManagePost() {
   const { id } = useParams();
@@ -38,6 +38,7 @@ export default function ManagePost() {
     } else {
       await dispatch(createPost(formData));
     }
+    await dispatch(fetchStories({ page: 1, limit: 10 }));
     navigate('/');
   };
 

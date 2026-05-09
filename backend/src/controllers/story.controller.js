@@ -10,7 +10,7 @@ export const getStories = asyncHandler(async (req, res) => {
   const skip = (page - 1) * limit;
 
   const [stories, total] = await Promise.all([
-    Story.find().sort({ points: -1 }).skip(skip).limit(limit).lean(),
+    Story.find().sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
     Story.countDocuments(),
   ]);
 
