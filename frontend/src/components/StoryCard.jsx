@@ -1,9 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleBookmark } from '../store/slices/storiesSlice';
+import { useAuth } from '../context/AuthContext';
 
 export default function StoryCard({ story }) {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useAuth();
   const bookmarks = useSelector((state) => state.stories.bookmarks);
   const isBookmarked = bookmarks.some((b) => b._id === story._id);
 

@@ -1,8 +1,9 @@
 import api from '../api/axios';
 
-export const getStoriesApi = (page = 1, limit = 10, createdBy = null) => {
+export const getStoriesApi = (page = 1, limit = 10, createdBy = null, newsOnly = false) => {
   let url = `/stories?page=${page}&limit=${limit}`;
   if (createdBy) url += `&createdBy=${createdBy}`;
+  if (newsOnly) url += `&newsOnly=true`;
   return api.get(url);
 };
 export const getStoryApi = (id) => api.get(`/stories/${id}`);

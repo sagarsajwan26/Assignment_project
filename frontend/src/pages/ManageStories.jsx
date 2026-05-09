@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchStories, createStory, updateStory, deleteStory, triggerScrape } from '../store/slices/storiesSlice';
+import { useAuth } from '../context/AuthContext';
 
 const empty = { title: '', url: '', points: 0, author: '', postedAt: '' };
 
@@ -9,7 +10,7 @@ export default function ManageStories() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { items, pagination, loading, scraping } = useSelector((s) => s.stories);
-  const { user } = useSelector((s) => s.auth);
+  const { user } = useAuth();
 
   const myStories = items;
 
@@ -52,6 +53,12 @@ export default function ManageStories() {
     await dispatch(deleteStory(id));
   };
 
+  const handleScrape = async () => {
+    await dispatch(triggerScrape());
+    dispatch(fetchStories({ page: 1, limit: 10 }));
+    setPage(1);
+  };
+
   const handleCancel = () => {
     setForm(empty);
     setEditId(null);
@@ -64,6 +71,13 @@ export default function ManageStories() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-extrabold text-slate-800">Manage Stories</h1>
         <div className="flex gap-3">
+          <button
+            onClick={handleScrape}
+            disabled={scraping}
+            className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all font-medium text-sm disabled:opacity-60"
+          >
+            {scraping ? 'Scraping...' : '⟳ Scrape HN'}
+          </button>
           <button
             onClick={() => { setShowForm(!showForm); setEditId(null); setForm(empty); }}
             className="btn-primary text-sm"

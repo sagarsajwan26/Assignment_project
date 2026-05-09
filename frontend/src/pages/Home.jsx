@@ -1,18 +1,23 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchStories, fetchBookmarks } from '../store/slices/storiesSlice';
+import { fetchStories, fetchBookmarks, triggerScrape } from '../store/slices/storiesSlice';
 import StoryCard from '../components/StoryCard';
 import Pagination from '../components/Pagination';
+import { useAuth } from '../context/AuthContext';
 
 export default function Home() {
   const dispatch = useDispatch();
   const { items, pagination, loading, error } = useSelector((s) => s.stories);
-  const { user } = useSelector((s) => s.auth);
+  const { user } = useAuth();
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    dispatch(fetchStories({ page, limit: 10 }));
-  }, [dispatch, page]);
+    const init = async () => {
+      await dispatch(triggerScrape());
+      dispatch(fetchStories({ page: 1, limit: 10, newsOnly: true }));
+    };
+    init();
+  }, [dispatch]);
 
   useEffect(() => {
     if (user) dispatch(fetchBookmarks());

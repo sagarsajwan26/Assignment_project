@@ -1,22 +1,22 @@
 import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { signupUser, clearError } from '../store/slices/authSlice';
+import { useAuth } from '../context/AuthContext';
 
 export default function Signup() {
   const [formData, setFormData] = useState({ username: '', email: '', password: '' });
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, loading, error } = useSelector((state) => state.auth);
+  const { user, loading, error, signup } = useAuth();
 
   useEffect(() => {
     if (user) navigate('/');
-    return () => dispatch(clearError());
-  }, [user, navigate, dispatch]);
+  }, [user, navigate]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(signupUser(formData));
+    try {
+      await signup(formData);
+    } catch (err) {
+    }
   };
 
   return (

@@ -4,9 +4,9 @@ import {
   toggleBookmarkApi, getBookmarksApi, triggerScrapeApi,
 } from '../../apiRoutes/post.api';
 
-export const fetchStories = createAsyncThunk('stories/fetch', async ({ page = 1, limit = 10, createdBy = null } = {}, { rejectWithValue }) => {
+export const fetchStories = createAsyncThunk('stories/fetch', async ({ page = 1, limit = 10, createdBy = null, newsOnly = false } = {}, { rejectWithValue }) => {
   try {
-    const res = await getStoriesApi(page, limit, createdBy);
+    const res = await getStoriesApi(page, limit, createdBy, newsOnly);
     return res.data.data;
   } catch (err) {
     return rejectWithValue(err.response?.data?.message || 'Failed to fetch stories');

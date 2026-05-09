@@ -8,9 +8,22 @@ export const getStories = async (req, res) => {
   const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 10));
   const skip = (page - 1) * limit;
 
-  const query = { createdBy: { $ne: null } };
+  const query = {};
+  console.log('Query Params:', req.query);
   if (req.query.createdBy) {
     query.createdBy = req.query.createdBy;
+  } else if (req.query.newsOnly === 'true') {
+    query.createdBy = null;
+  }
+  console.log('Database Query:', query);
+
+  // Auto-scrape if no news data exists and we are not filtering by user
+  if (!req.query.createdBy) {
+    const scrapedCount = await Story.countDocuments({ createdBy: null });
+    if (scrapedCount === 0) {
+      const { scrapeTopStories } = await import('../services/scraper.service.js');
+      await scrapeTopStories();
+    }
   }
 
   const [stories, total] = await Promise.all([

@@ -1,12 +1,12 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import Story from '../model/post.model.js';
 
 const HN_URL = 'https://news.ycombinator.com';
 const SCRAPE_LIMIT = 10;
 
-export const scrapeTopStories = async () => {
+const testScrape = async () => {
   try {
+    console.log('Fetching HN...');
     const { data } = await axios.get(HN_URL, {
       timeout: 10000,
       headers: {
@@ -27,17 +27,14 @@ export const scrapeTopStories = async () => {
       const author = subtext.find('.hnuser').text().trim();
       const postedAt = subtext.find('.age').attr('title') || subtext.find('.age a').text().trim();
 
-      if (title) stories.push({ title, url, points, author, postedAt, createdBy: null });
+      if (title) stories.push({ title, url, points, author, postedAt });
     });
 
-    if (stories.length > 0) {
-      await Story.deleteMany({ createdBy: null });
-      await Story.insertMany(stories);
-      console.log(`Scraped and saved ${stories.length} stories`);
-    }
-    return stories;
-  } catch (error) {
-    console.error('Scraping failed:', error.message);
-    return [];
+    console.log('Scraped stories:', stories.length);
+    console.log('First story:', stories[0]);
+  } catch (err) {
+    console.error('Scrape failed:', err.message);
   }
 };
+
+testScrape();
