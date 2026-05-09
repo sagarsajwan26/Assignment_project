@@ -26,7 +26,7 @@ export default function Navbar() {
                 + Create
               </Link>
               <div className="flex items-center gap-3">
-                <span className="text-sm text-slate-500 hidden sm:inline">Hi, {user.name}</span>
+                <span className="text-sm text-slate-500 hidden sm:inline">Hi, {user.username}</span>
                 <button
                   onClick={handleLogout}
                   className="px-4 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-all text-sm font-medium"

@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { signupUser, clearError } from '../store/slices/authSlice';
 
 export default function Signup() {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user, loading, error } = useSelector((state) => state.auth);
@@ -35,16 +35,17 @@ export default function Signup() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Username</label>
             <input
               type="text"
               className="input-field"
-              placeholder="John Doe"
+              placeholder="sagar123"
               required
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              value={formData.username}
+              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
             />
           </div>
+
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
             <input
