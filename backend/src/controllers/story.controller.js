@@ -8,7 +8,7 @@ export const getStories = async (req, res) => {
   const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 10));
   const skip = (page - 1) * limit;
 
-  const query = {};
+  const query = { createdBy: { $ne: null } };
   if (req.query.createdBy) {
     query.createdBy = req.query.createdBy;
   }

@@ -27,6 +27,7 @@ export const scrapeTopStories = async () => {
 
   if (!stories.length) return [];
 
-  await Story.deleteMany({});
+  // only delete stories that were scraped (no creator)
+  await Story.deleteMany({ createdBy: null });
   return Story.insertMany(stories);
 };

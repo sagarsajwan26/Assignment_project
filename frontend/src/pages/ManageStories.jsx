@@ -52,12 +52,6 @@ export default function ManageStories() {
     await dispatch(deleteStory(id));
   };
 
-  const handleScrape = async () => {
-    await dispatch(triggerScrape());
-    dispatch(fetchStories({ page: 1, limit: 10 }));
-    setPage(1);
-  };
-
   const handleCancel = () => {
     setForm(empty);
     setEditId(null);
@@ -70,13 +64,6 @@ export default function ManageStories() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-extrabold text-slate-800">Manage Stories</h1>
         <div className="flex gap-3">
-          <button
-            onClick={handleScrape}
-            disabled={scraping}
-            className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all font-medium text-sm disabled:opacity-60"
-          >
-            {scraping ? 'Scraping...' : '⟳ Scrape HN'}
-          </button>
           <button
             onClick={() => { setShowForm(!showForm); setEditId(null); setForm(empty); }}
             className="btn-primary text-sm"

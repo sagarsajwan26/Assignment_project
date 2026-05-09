@@ -4,7 +4,6 @@ import cookieParser from 'cookie-parser';
 import { globalLimiter } from './middleware/rateLimiter.js';
 import authRoutes from './routes/auth.routes.js';
 import storyRoutes from './routes/story.routes.js';
-import scraperRoutes from './routes/scraper.routes.js';
 import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
@@ -41,7 +40,6 @@ app.use(globalLimiter);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/stories', storyRoutes);
-app.use('/api/scrape', scraperRoutes);
 
 app.use(errorHandler);
 
