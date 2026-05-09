@@ -11,7 +11,7 @@ const errorHandler = (err, _req, res, _next) => {
   }
 
   if (err.code === 11000) {
-    const field = Object.keys(err.keyValue)[0];
+    const field = err.keyValue ? Object.keys(err.keyValue)[0] : 'Field';
     return res.status(409).json({ success: false, message: `${field} already exists` });
   }
 
@@ -27,7 +27,8 @@ const errorHandler = (err, _req, res, _next) => {
     return res.status(401).json({ success: false, message: 'Token expired' });
   }
 
-  res.status(500).json({ success: false, message: 'Internal server error' });
+  console.error('Unhandled error:', err);
+  res.status(500).json({ success: false, message: err.message || 'Internal server error' });
 };
 
 export default errorHandler;
