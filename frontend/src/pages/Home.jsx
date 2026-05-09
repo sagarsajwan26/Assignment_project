@@ -18,6 +18,8 @@ export default function Home() {
     if (user) dispatch(fetchBookmarks());
   }, [dispatch, user]);
 
+  const handleRetry = () => dispatch(fetchStories({ page, limit: 10 }));
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-8">
@@ -36,7 +38,7 @@ export default function Home() {
         <div className="bg-red-50 border border-red-100 p-6 rounded-2xl text-center">
           <p className="text-red-600 font-medium">{error}</p>
           <button
-            onClick={() => dispatch(fetchStories({ page, limit: 10 }))}
+            onClick={handleRetry}
             className="mt-4 text-sm font-semibold text-red-700 hover:underline"
           >
             Try again

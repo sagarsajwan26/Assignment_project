@@ -3,6 +3,9 @@ import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
+const ACCESS_TOKEN_MAX_AGE = 15 * 60 * 1000;
+const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000;
+
 const cookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
@@ -29,15 +32,13 @@ export const signup = asyncHandler(async (req, res) => {
 
   res
     .status(201)
-    .cookie('accessToken', accessToken, { ...cookieOptions, maxAge: 15 * 60 * 1000 })
-    .cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 })
-    .json(
-      new ApiResponse(201, {
-        user: { id: user._id, username: user.username, email: user.email },
-        accessToken,
-        refreshToken,
-      }, 'User registered successfully')
-    );
+    .cookie('accessToken', accessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_MAX_AGE })
+    .cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_MAX_AGE })
+    .json(new ApiResponse(201, {
+      user: { id: user._id, username: user.username, email: user.email },
+      accessToken,
+      refreshToken,
+    }, 'User registered successfully'));
 });
 
 export const login = asyncHandler(async (req, res) => {
@@ -50,15 +51,13 @@ export const login = asyncHandler(async (req, res) => {
   const { accessToken, refreshToken } = await generateTokens(user);
 
   res
-    .cookie('accessToken', accessToken, { ...cookieOptions, maxAge: 15 * 60 * 1000 })
-    .cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 })
-    .json(
-      new ApiResponse(200, {
-        user: { id: user._id, username: user.username, email: user.email },
-        accessToken,
-        refreshToken,
-      }, 'Login successful')
-    );
+    .cookie('accessToken', accessToken, { ...cookieOptions, maxAge: ACCESS_TOKEN_MAX_AGE })
+    .cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: REFRESH_TOKEN_MAX_AGE })
+    .json(new ApiResponse(200, {
+      user: { id: user._id, username: user.username, email: user.email },
+      accessToken,
+      refreshToken,
+    }, 'Login successful'));
 });
 
 export const logout = asyncHandler(async (req, res) => {

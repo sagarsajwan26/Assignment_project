@@ -2,7 +2,8 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import Story from '../model/post.model.js';
 
-const HN_URL = 'https://news.ycombinator.com';
+const HN_URL = process.env.HN_URL || 'https://news.ycombinator.com';
+const SCRAPE_LIMIT = parseInt(process.env.SCRAPE_LIMIT) || 10;
 
 export const scrapeTopStories = async () => {
   const { data } = await axios.get(HN_URL, { timeout: 10000 });
@@ -10,7 +11,7 @@ export const scrapeTopStories = async () => {
 
   const stories = [];
 
-  $('.athing').slice(0, 10).each((_, el) => {
+  $('.athing').slice(0, SCRAPE_LIMIT).each((_, el) => {
     const id = $(el).attr('id');
     const titleEl = $(el).find('.titleline > a').first();
     const title = titleEl.text().trim();

@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import app from './src/app.js';
 import { scrapeTopStories } from './src/services/scraper.service.js';
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 mongoose
   .connect(process.env.MONGO_URI)
